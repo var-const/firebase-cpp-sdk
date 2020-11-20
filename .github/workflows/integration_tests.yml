@@ -140,10 +140,12 @@ jobs:
         run: |
           python scripts/gha/test_lab.py --android_model ${{ github.event.inputs.android_device }} --android_api ${{ github.event.inputs.android_api }} --ios_model ${{ github.event.inputs.ios_device }} --ios_version ${{ github.event.inputs.ios_version }} --testapp_dir ${{ github.workspace }}/testapps --code_platform cpp --key_file ${{ github.workspace }}/scripts/gha-encrypted/gcs_key_file.json
       - uses: actions/checkout@v2
+        if: matrix.target_platform != 'Desktop' && !cancelled()
         with: 
           repository: 'granluo/testing_report_generator'
           ref: 'fix_input'
       - name: Test the action
+        if: matrix.target_platform != 'Desktop' && !cancelled()
         uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
