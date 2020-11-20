@@ -226,8 +226,9 @@ def _report_results(tests, code_platform):
   if testapp_errors:
     logging.info("TEST ERRORS:\n%s", "\n".join(testapp_errors))
 
-  logging.info(report.convert_to_data_container().replace("'",'"'))
-  os.system("echo TEST_RESULTS='" + str(report.convert_to_data_container()) + "' >> $GITHUB_ENV")
+  json_result = str(report.convert_to_data_container()).replace("'",'"')
+  logging.info(json_result)
+  os.system("echo TEST_RESULTS='" + json_result + "' >> $GITHUB_ENV")
 
   return num_successes == num_tests
 
