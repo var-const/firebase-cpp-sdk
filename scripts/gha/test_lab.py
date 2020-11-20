@@ -55,6 +55,7 @@ iPhone 8 Plus, OS 11.4:
 import os
 import subprocess
 import threading
+import datetime
 
 from absl import app
 from absl import flags
@@ -63,6 +64,7 @@ import attr
 
 from integration_testing import gcs
 from integration_testing import test_validation
+from integration_testing import issue_model
 
 _ANDROID = "android"
 _IOS = "ios"
@@ -180,21 +182,36 @@ def _report_results(tests, code_platform):
   # ran to completion, but 1 or more test cases failed. An error means the
   # testapp did not run to completion: it timed out, crashed,
   # or we couldn't find its result log on FTL for any reason.
+  report = issue_model.Report(title = 'testing report')
+  column_1 = 'Apps'
+  column_2 = datetime.datetime.now().strftime("%m/%d")
+  columns = [column_1, column_2]
+  contents = []
+
   testapp_failures = []
   testapp_errors = []
   for test in tests:
     logging.info("Determining results for %s", test.testapp_path)
     log_text = _get_testapp_log_text_from_gcs(test.results_dir)
+    app_name = os.path.basename(test.results_dir)
+    result_link = _gcs_get_link(test.results_dir)
     if log_text:
       results = test_validation.validate_results(log_text, code_platform)
       logging.info("Test summary or log tail:\n%s", results.summary)
       if not results.complete:
         testapp_errors.append(test.testapp_path)
-      if results.fails > 0:
+        contents.append({column_1: app_name, column_2: "[{}]({})".format('error!', result_link)})
+      elif results.fails > 0:
         testapp_failures.append(test.testapp_path)
+        contents.append({column_1: app_name, column_2: "[{}]({})".format('fail!', result_link)})
+      else:
+        contents.append({column_1: app_name, column_2: "[{}]({})".format('success', result_link)})
     else:
       testapp_errors.append(test.testapp_path)
+      contents.append({column_1: app_name, column_2: "[{}]({})".format('error', test.results_dir)})
 
+  table = issue_model.Table(table_name = tests[0].platform + ' testing results', column_names = columns, contents = contents)
+  report.add_table(table)
   num_tests = len(tests)
   num_fails = len(testapp_failures)
   num_errors = len(testapp_errors)
@@ -208,6 +225,10 @@ def _report_results(tests, code_platform):
     logging.info("TEST FAILURES:\n%s", "\n".join(testapp_failures))
   if testapp_errors:
     logging.info("TEST ERRORS:\n%s", "\n".join(testapp_errors))
+
+  logging.info(report.convert_to_data_container())
+  os.system("echo TEST_RESULTS='" + str(report.convert_to_data_container()) + "' >> $GITHUB_ENV")
+
   return num_successes == num_tests
 
 
@@ -260,6 +281,11 @@ def _gcs_read_file(gcs_path):
   logging.info("Reading GCS file: %s", " ".join(args))
   result = subprocess.run(args=args, capture_output=True, text=True, check=True)
   return result.stdout
+
+
+def _gcs_get_link(gcs_path):
+  """Convert gcs_path to http link"""
+  return gcs_path.replace("gs://", "https://pantheon.corp.google.com/storage/browser/")
 
 
 def _fix_path(path):
