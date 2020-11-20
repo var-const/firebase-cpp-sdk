@@ -286,7 +286,7 @@ def _gcs_read_file(gcs_path):
 
 def _gcs_get_link(gcs_path):
   """Convert gcs_path to http link"""
-  return gcs_path.replace("gs://", "https://pantheon.corp.google.com/storage/browser/")
+  return 'https://pantheon.corp.google.com/storage/browser/games-auto-release-testing/' + gcs_path
 
 
 def _fix_path(path):
