@@ -148,6 +148,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repo_name: ${{ github.repository }}
-          title: "Testing report"
+          title: ${{ matrix.os }}-${{ matrix.target_platform }}_Testing_Report
           label: "manually-testing"
           comment: ${{ env.TEST_RESULTS }}
