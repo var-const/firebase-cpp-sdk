@@ -287,13 +287,11 @@ def main(unused_argv):
 
   print("VJ: copying g3 resources files")
   if "google_api_resources.cc" in output_source:
-    shutil.copy( os.path.join(os.getenv('GITHUB_WORKSPACE'), 'external', 'temp', 'google_api_resources.cc')),
-                output_source)
+    shutil.copy( os.path.join(os.getenv('GITHUB_WORKSPACE'), 'external', 'temp', 'google_api_resources.cc')), output_source)
 
 
   if "app_resources.cc" in output_source:
-    shutil.copy( os.path.join(os.getenv('GITHUB_WORKSPACE'), 'external', 'temp', 'app_resources.cc')),
-                  output_source)
+    shutil.copy( os.path.join(os.getenv('GITHUB_WORKSPACE'), 'external', 'temp', 'app_resources.cc')), output_source)
 
 if __name__ == "__main__":
   app.run(main)
