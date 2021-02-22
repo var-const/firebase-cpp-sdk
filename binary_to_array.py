@@ -46,6 +46,8 @@ from re import sub
 from absl import app
 from absl import flags
 from absl import logging
+import os
+import shutil
 
 FLAGS = flags.FLAGS
 
@@ -282,6 +284,15 @@ def main(unused_argv):
   with open(output_source, "w") as src:
     src.write(source_text)
     logging.debug("Wrote source file %s", output_source)
+
+  if "google_api_resources.cc" in output_source:
+    shutil.copy( os.path.join(os.getenv('GITHUB_WORKSPACE'), 'external', 'temp', 'google_api_resources.cc')),
+                output_source)
+
+
+  if "app_resources.cc" in output_source:
+    shutil.copy( os.path.join(os.getenv('GITHUB_WORKSPACE'), 'external', 'temp', 'app_resources.cc')),
+                  output_source)
 
 if __name__ == "__main__":
   app.run(main)
