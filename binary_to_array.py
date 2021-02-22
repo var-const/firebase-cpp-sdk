@@ -285,6 +285,7 @@ def main(unused_argv):
     src.write(source_text)
     logging.debug("Wrote source file %s", output_source)
 
+  print("VJ: copying g3 resources files")
   if "google_api_resources.cc" in output_source:
     shutil.copy( os.path.join(os.getenv('GITHUB_WORKSPACE'), 'external', 'temp', 'google_api_resources.cc')),
                 output_source)
