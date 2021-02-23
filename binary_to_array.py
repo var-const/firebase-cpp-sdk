@@ -293,5 +293,14 @@ def main(unused_argv):
   if "app_resources.cc" in output_source:
     shutil.copy( os.path.join(os.getenv('GITHUB_WORKSPACE'), 'external', 'temp', 'app_resources.cc'), output_source)
 
+  if "database_resources.cc" in output_source:
+    shutil.copy( os.path.join(os.getenv('GITHUB_WORKSPACE'), 'external', 'temp', 'database_resources.cc'), output_source)
+
+  if "storage_resources.cc" in output_source:
+    shutil.copy( os.path.join(os.getenv('GITHUB_WORKSPACE'), 'external', 'temp', 'storage_resources.cc'), output_source)
+
+  if "firestore_resources.cc" in output_source:
+    shutil.copy( os.path.join(os.getenv('GITHUB_WORKSPACE'), 'external', 'temp', 'firestore_resources.cc'), output_source)
+
 if __name__ == "__main__":
   app.run(main)
